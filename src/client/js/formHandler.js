@@ -9,8 +9,14 @@ function handleSubmit(event) {
     const date = document.getElementById('input_date').value;
     if(checkInput(location, date)) {
         transformLocation({data: location})
-        .then(function(data) {
-                console.log("data in formHandler: " + data);
+        .then(function(data = {}) {
+            loadWeatherData({
+                'lat': data.lat,
+                'lng': data.lng
+            })
+        })
+        .then(function(data){
+            console.log(data)
         })
     } else {
         alert("Please add valid input data");
