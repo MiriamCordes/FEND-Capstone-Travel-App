@@ -12,7 +12,7 @@ const app = express()
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-const allowList = ['http://localhost:8080', 'http://localhost:8080.*', 'https://secure.geonames.org/*', 'https://api.weatherbit.io/v2.0/*']
+const allowList = ['http://localhost:8080', 'http://localhost:8080.*', 'https://secure.geonames.org/*', 'https://api.weatherbit.io/v2.0/*', 'https://pixabay.com/api/*']
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", allowList);
@@ -33,10 +33,9 @@ app.listen(8080, function () {
 
 app.post('/transformLocation', async function(req, res) {
     const encodedPlacename = encodeURIComponent(req.body.data);
-   const serverRes = await fetch('https://secure.geonames.org/searchJSON?q=' + encodedPlacename + '&maxRows=1&username=' + process.env.GEO_NAMES_USER_NAME);
+    const serverRes = await fetch('https://secure.geonames.org/searchJSON?q=' + encodedPlacename + '&maxRows=1&username=' + process.env.GEO_NAMES_USER_NAME);
     try {
         const result = await serverRes.json();
-        console.log(result);
         const geoName = result.geonames[0];
         const geoData = {
             'lat': geoName.lat,
@@ -44,23 +43,68 @@ app.post('/transformLocation', async function(req, res) {
             'cityName': geoName.name,
             'countryName': geoName.countryName
         }
-        console.log(geoData);
         res.send(geoData);
     } catch (error) {
         console.log("Error transforming location: ", error);
     }
 })
 
-app.get('/weatherData/:lat;:lng', async function(req, res) {
+app.get('/currentWeather/:lat;:lng', async function(req, res) {
+    const lat = req.params.lat;
+    const lon = req.params.lng;
+    const serverRes = await fetch('https://api.weatherbit.io/v2.0/forecast/current?lat=' + lat + "&lon=" + lon + '&key=' + process.env.WEATHER_BIT_API_KEY);
+    try {
+        const result = await serverRes.json();
+        console.log(result);
+        const resultData = result.data;
+        console.log(resultData);
+        const weatherResult = {
+            'date': new Date(),
+            'desc': resultData.weather.description,
+            'temp': resultData.temp
+        }
+        const weatherResultList = [weatherResult];
+        console.log(weatherResultList);
+        res.send(weatherResultList);
+    } catch (error) {
+        console.log("Error loading current weather: ", error);
+    }
+})
+
+app.get('/weatherForecast/:lat;:lng', async function(req, res) {
     const lat = req.params.lat;
     const lon = req.params.lng;
     const serverRes = await fetch('https://api.weatherbit.io/v2.0/forecast/daily?lat=' + lat + "&lon=" + lon + '&key=' + process.env.WEATHER_BIT_API_KEY);
     try {
         const result = await serverRes.json();
         console.log(result);
-        // TODO build object to send back to client
-        // res.send(object);
+        const resultDataArray = result.data;
+        console.log("resultDataArray: " + result.data);
+        const weatherResultList = [];
+        for(const entry in resultDataArray) {
+            console.log("entry " + entry);
+            weatherResultList.push({
+                'date': entry.valid_date,
+                'desc': entry.weather.description,
+                'temp': entry.temp
+            })
+        }
+        console.log("resultList: " +weatherResultList);
+        res.send(weatherResultList);
     } catch (error) {
-        console.log("Error transforming location: ", error);
+        console.log("Error loading weather forecast: ", error);
+    }
+})
+
+app.get('/loadImage/:location', async function(req, res) {
+    const location = encodeURIComponent(req.body.location);
+    const serverRes = await fetch('https://pixabay.com/api/?q=' + location + '&per_page=3' + '&key=' + process.env.PIXABAY_API_KEY);
+    try {
+        const result = await serverRes.json();
+        const resultDataArray = result.hits;
+        const firstImageUrl = resultDataArray[0].webformatURL;
+        res.send({'imageUrl': firstImageUrl});
+    } catch (error) {
+        console.log("Error loading image: ", error);
     }
 })

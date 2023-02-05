@@ -12,11 +12,15 @@ function handleSubmit(event) {
         .then(function(data = {}) {
             loadWeatherData({
                 'lat': data.lat,
-                'lng': data.lng
+                'lng': data.lng,
+                'date': date
             })
         })
-        .then(function(data){
-            console.log(data)
+        .then(function(){
+           loadImage(location)
+        })
+        .then(function(data = {}) {
+            // Update UI
         })
     } else {
         alert("Please add valid input data");
