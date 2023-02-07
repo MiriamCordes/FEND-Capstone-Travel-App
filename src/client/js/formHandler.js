@@ -19,9 +19,9 @@ function handleSubmit(event) {
         .then(function(){
            loadImage(location)
         })
-        .then(function(data = {}) {
+       /* .then(function(data = {}) {
             // Update UI
-        })
+        })*/
     } else {
         alert("Please add valid input data");
     }

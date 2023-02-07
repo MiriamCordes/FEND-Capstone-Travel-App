@@ -52,19 +52,16 @@ app.post('/transformLocation', async function(req, res) {
 app.get('/currentWeather/:lat;:lng', async function(req, res) {
     const lat = req.params.lat;
     const lon = req.params.lng;
-    const serverRes = await fetch('https://api.weatherbit.io/v2.0/forecast/current?lat=' + lat + "&lon=" + lon + '&key=' + process.env.WEATHER_BIT_API_KEY);
+    const serverRes = await fetch('https://api.weatherbit.io/v2.0/current?lat=' + lat + "&lon=" + lon + '&key=' + process.env.WEATHER_BIT_API_KEY);
     try {
         const result = await serverRes.json();
-        console.log(result);
-        const resultData = result.data;
-        console.log(resultData);
+        const resultData = result.data[0];
         const weatherResult = {
             'date': new Date(),
             'desc': resultData.weather.description,
             'temp': resultData.temp
         }
         const weatherResultList = [weatherResult];
-        console.log(weatherResultList);
         res.send(weatherResultList);
     } catch (error) {
         console.log("Error loading current weather: ", error);
@@ -77,19 +74,15 @@ app.get('/weatherForecast/:lat;:lng', async function(req, res) {
     const serverRes = await fetch('https://api.weatherbit.io/v2.0/forecast/daily?lat=' + lat + "&lon=" + lon + '&key=' + process.env.WEATHER_BIT_API_KEY);
     try {
         const result = await serverRes.json();
-        console.log(result);
         const resultDataArray = result.data;
-        console.log("resultDataArray: " + result.data);
         const weatherResultList = [];
-        for(const entry in resultDataArray) {
-            console.log("entry " + entry);
+        for(const entry of resultDataArray) {
             weatherResultList.push({
                 'date': entry.valid_date,
                 'desc': entry.weather.description,
                 'temp': entry.temp
             })
         }
-        console.log("resultList: " +weatherResultList);
         res.send(weatherResultList);
     } catch (error) {
         console.log("Error loading weather forecast: ", error);
