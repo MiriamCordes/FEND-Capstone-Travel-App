@@ -31,6 +31,12 @@ app.listen(8080, function () {
     console.log('Example app listening on port 8080!')
 })
 
+viewModel = {
+    geoData : {},
+    weather : [], 
+    imageUrl : ""
+}
+
 app.post('/transformLocation', async function(req, res) {
     const encodedPlacename = encodeURIComponent(req.body.data);
     const serverRes = await fetch('https://secure.geonames.org/searchJSON?q=' + encodedPlacename + '&maxRows=1&username=' + process.env.GEO_NAMES_USER_NAME);
@@ -43,6 +49,7 @@ app.post('/transformLocation', async function(req, res) {
             'cityName': geoName.name,
             'countryName': geoName.countryName
         }
+        viewModel.geoData = geoData;
         res.send(geoData);
     } catch (error) {
         console.log("Error transforming location: ", error);
@@ -62,6 +69,7 @@ app.get('/currentWeather/:lat;:lng', async function(req, res) {
             'temp': resultData.temp
         }
         const weatherResultList = [weatherResult];
+        viewModel.weather = weatherResultList;
         res.send(weatherResultList);
     } catch (error) {
         console.log("Error loading current weather: ", error);
@@ -83,6 +91,7 @@ app.get('/weatherForecast/:lat;:lng', async function(req, res) {
                 'temp': entry.temp
             })
         }
+        viewModel.weather = weatherResultList;
         res.send(weatherResultList);
     } catch (error) {
         console.log("Error loading weather forecast: ", error);
@@ -96,8 +105,14 @@ app.get('/loadImage/:location', async function(req, res) {
         const result = await serverRes.json();
         const resultDataArray = result.hits;
         const firstImageUrl = resultDataArray[0].webformatURL;
-        res.send({'imageUrl': firstImageUrl});
+        viewModel.imageUrl = firstImageUrl
+        res.send({'data': firstImageUrl});
     } catch (error) {
         console.log("Error loading image: ", error);
     }
+})
+
+app.get('/travelResult', function(req, res) {
+    console.log(viewModel);
+    res.send(viewModel);
 })
