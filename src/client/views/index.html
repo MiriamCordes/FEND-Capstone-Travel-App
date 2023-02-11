@@ -7,28 +7,32 @@
 
   <body>
     <header>
-      <div class="app_header">
+      <div class="app-header">
         <h1>Travel App</h1>
       </div>
     </header>
     <main>
+      <div class="result-container">
+        <div class="grid-item" id="image-container"></div>
+        <div class="grid-item" id="info-container"></div>
+      </div>
       <div class="input-container">
         <form id="form" onsubmit="return false">
-          <div class="input_wrapper">
-            <label for="input_location">Destination:</label>
+          <div class="input-wrapper">
+            <label for="input-location">Destination:</label>
             <input
-              id="input_location"
+              id="input-location"
               type="text"
-              name="input_location"
+              name="input-location"
               value=""
               placeholder="Location"
             />
           </div>
-          <div class="input_wrapper">
-            <label for="input_date">Departure:</label>
-            <input id="input_date" type="date" name="input_date" value="" />
+          <div class="input-wrapper">
+            <label for="input-date">Departure:</label>
+            <input id="input-date" type="date" name="input-date" value="" />
           </div>
-          <div class="input_wrapper">
+          <div class="input-wrapper">
             <input type="submit" name="" value="submit" />
           </div>
         </form>
