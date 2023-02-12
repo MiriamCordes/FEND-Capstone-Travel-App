@@ -147,6 +147,7 @@ app.get("/loadImage/:location", async function (req, res) {
 });
 
 app.get("/travelResult", function (req, res) {
-  console.log(viewModel);
   res.send(viewModel);
 });
+
+module.exports = app;
