@@ -2,44 +2,60 @@ async function updateView(date) {
   const request = await fetch("http://localhost:8080/travelResult");
   try {
     const data = await request.json();
-    console.log(data);
-    // TODO refactor
-    // TODO hide result container initially
-    // TODO add styling
-    const imageFragment = document.createDocumentFragment();
-    const image = document.createElement("img");
-    image.src = data.imageUrl;
-    imageFragment.appendChild(image);
-    const infoFragment = document.createDocumentFragment();
-    const destinationInfo = document.createElement("p");
-    destinationInfo.textContent = `Your Destination: ${data.geoData.cityName}, ${data.geoData.countryName}`;
-    infoFragment.appendChild(destinationInfo);
-    const dateInfo = document.createElement("p");
-    dateInfo.textContent = `Your Departure: ${date}`;
-    infoFragment.appendChild(destinationInfo);
-    const weatherFragment = document.createDocumentFragment();
-    const weatherInfo = document.createElement("p");
-    weatherInfo.textContent = "Your Weather Forecast:";
-    weatherFragment.appendChild(weatherInfo);
-    for (const weatherEntry of data.weather) {
-      const forecastDate = document.createElement("p");
-      forecastDate.textContent = `Forecast for ${weatherEntry.date}:`;
-      const forecastTemperature = document.createElement("p");
-      forecastTemperature.textContent = `Temperature: ${weatherEntry.temp} °C`;
-      const forecastDescription = document.createElement("p");
-      forecastDescription.textContent = `Description: ${weatherEntry.desc}`;
-      weatherFragment.appendChild(forecastDate);
-      weatherFragment.appendChild(forecastTemperature);
-      weatherFragment.appendChild(forecastDescription);
-    }
-    infoFragment.appendChild(weatherFragment);
-    const imageContainer = document.getElementById("image-container");
-    const infoContainer = document.getElementById("info-container");
-    imageContainer.appendChild(imageFragment);
-    infoContainer.appendChild(infoFragment);
+    createViewElementsAndUpdateView(data, date);
   } catch (error) {
     console.log("error", error);
   }
+}
+
+function createViewElementsAndUpdateView(data = {}, date) {
+  const imageFragment = getImageFragment(data.imageUrl);
+  const infoFragment = getInfoFragment(data.geoData, data.weather, date);
+  const imageContainer = document.getElementById("image-container");
+  const infoContainer = document.getElementById("info-container");
+  imageContainer.appendChild(imageFragment);
+  infoContainer.appendChild(infoFragment);
+  document.getElementById("result-wrapper").style.display = "block";
+}
+
+function getImageFragment(imageUrl = "") {
+  const imageFragment = document.createDocumentFragment();
+  const image = document.createElement("img");
+  image.src = imageUrl;
+  imageFragment.appendChild(image);
+  return imageFragment;
+}
+
+function getInfoFragment(geoData = {}, weatherData = {}, date) {
+  const infoFragment = document.createDocumentFragment();
+  const destinationInfo = document.createElement("p");
+  destinationInfo.innerHTML = `<strong>Your Destination: </strong> ${geoData.cityName}, ${geoData.countryName}`;
+  infoFragment.appendChild(destinationInfo);
+  const dateInfo = document.createElement("p");
+  dateInfo.innerHTML = `<strong>Your Departure:</strong> ${date}`;
+  infoFragment.appendChild(dateInfo);
+  const weatherFragment = getWeatherFragment(weatherData);
+  infoFragment.appendChild(weatherFragment);
+  return infoFragment;
+}
+
+function getWeatherFragment(weatherData = {}) {
+  const weatherFragment = document.createDocumentFragment();
+  const weatherInfo = document.createElement("p");
+  weatherInfo.innerHTML = "<strong>Your Weather Forecast:</strong>";
+  weatherFragment.appendChild(weatherInfo);
+  for (const weatherEntry of weatherData) {
+    const forecastDate = document.createElement("p");
+    forecastDate.innerHTML = `<strong>Forecast for </strong> ${weatherEntry.date}`;
+    const forecastTemperature = document.createElement("p");
+    forecastTemperature.innerHTML = `<strong>Temperature: </strong> ${weatherEntry.temp} °C`;
+    const forecastDescription = document.createElement("p");
+    forecastDescription.innerHTML = `<strong>Description: </strong> ${weatherEntry.desc}`;
+    weatherFragment.appendChild(forecastDate);
+    weatherFragment.appendChild(forecastTemperature);
+    weatherFragment.appendChild(forecastDescription);
+  }
+  return weatherFragment;
 }
 
 export { updateView };
