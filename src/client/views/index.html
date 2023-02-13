@@ -35,10 +35,26 @@
             <input id="input-date" type="date" name="input-date" value="" />
           </div>
           <div class="input-wrapper">
+            <label for="input-return-date">Return:</label>
+            <input
+              id="input-return-date"
+              type="date"
+              name="input-return-date"
+              value=""
+            />
+          </div>
+          <div class="input-wrapper">
             <input type="submit" name="" value="submit" />
           </div>
         </form>
       </div>
     </main>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/service-worker.js");
+        });
+      }
+    </script>
   </body>
 </html>

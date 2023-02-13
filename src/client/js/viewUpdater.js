@@ -1,16 +1,25 @@
-async function updateView(date) {
+async function updateView(dateOfDeparture, dateOfReturn) {
   const request = await fetch("http://localhost:8080/travelResult");
   try {
     const data = await request.json();
-    createViewElementsAndUpdateView(data, date);
+    createViewElementsAndUpdateView(data, dateOfDeparture, dateOfReturn);
   } catch (error) {
     console.log("error", error);
   }
 }
 
-function createViewElementsAndUpdateView(data = {}, date) {
+function createViewElementsAndUpdateView(
+  data = {},
+  dateOfDeparture,
+  dateOfReturn
+) {
   const imageFragment = getImageFragment(data.imageUrl);
-  const infoFragment = getInfoFragment(data.geoData, data.weather, date);
+  const infoFragment = getInfoFragment(
+    data.geoData,
+    data.weather,
+    dateOfDeparture,
+    dateOfReturn
+  );
   const imageContainer = document.getElementById("image-container");
   const infoContainer = document.getElementById("info-container");
   imageContainer.appendChild(imageFragment);
@@ -26,14 +35,28 @@ function getImageFragment(imageUrl = "") {
   return imageFragment;
 }
 
-function getInfoFragment(geoData = {}, weatherData = {}, date) {
+function getInfoFragment(
+  geoData = {},
+  weatherData = {},
+  dateOfDeparture,
+  dateOfReturn
+) {
   const infoFragment = document.createDocumentFragment();
   const destinationInfo = document.createElement("p");
   destinationInfo.innerHTML = `<strong>Your Destination: </strong> ${geoData.cityName}, ${geoData.countryName}`;
   infoFragment.appendChild(destinationInfo);
-  const dateInfo = document.createElement("p");
-  dateInfo.innerHTML = `<strong>Your Departure:</strong> ${date}`;
-  infoFragment.appendChild(dateInfo);
+  const departureInfo = document.createElement("p");
+  departureInfo.innerHTML = `<strong>Your Departure:</strong> ${dateOfDeparture}`;
+  infoFragment.appendChild(departureInfo);
+  const returnInfo = document.createElement("p");
+  returnInfo.innerHTML = `<strong>Your Return:</strong> ${dateOfReturn}`;
+  infoFragment.appendChild(returnInfo);
+  const lengthInfo = document.createElement("p");
+  lengthInfo.innerHTML = `<strong>Length Of Your Trip:</strong> ${getLenghtOfTrip(
+    dateOfDeparture,
+    dateOfReturn
+  )} Day(s)`;
+  infoFragment.appendChild(lengthInfo);
   const weatherFragment = getWeatherFragment(weatherData);
   infoFragment.appendChild(weatherFragment);
   return infoFragment;
@@ -56,6 +79,13 @@ function getWeatherFragment(weatherData = {}) {
     weatherFragment.appendChild(forecastDescription);
   }
   return weatherFragment;
+}
+
+// solution taken from https://stackoverflow.com/a/47181114
+function getLenghtOfTrip(dateOfDeparture, dateOfReturn) {
+  const diffInMs = new Date(dateOfReturn) - new Date(dateOfDeparture);
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  return diffInDays;
 }
 
 export { updateView };

@@ -85,7 +85,7 @@ app.get("/currentWeather/:lat;:lng", async function (req, res) {
     const result = await serverRes.json();
     const resultData = result.data[0];
     const weatherResult = {
-      date: new Date(),
+      date: new Date().toDateString(),
       desc: resultData.weather.description,
       temp: resultData.temp,
     };

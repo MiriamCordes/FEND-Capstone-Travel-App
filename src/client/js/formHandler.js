@@ -1,4 +1,4 @@
-import { checkInput } from "./inputChecker";
+const checkInput = require("../js/inputChecker");
 import { transformLocation } from "./locationTransformer";
 import { loadWeatherData } from "./weatherDataLoader";
 import { loadImage } from "./imageLoader";
@@ -8,18 +8,19 @@ async function handleSubmit(event) {
   event.preventDefault();
   resetView();
   const location = document.getElementById("input-location").value;
-  const date = document.getElementById("input-date").value;
-  if (checkInput(location, date)) {
+  const dateOfDeparture = document.getElementById("input-date").value;
+  const dateOfReturn = document.getElementById("input-return-date").value;
+  if (checkInput(location, dateOfDeparture, dateOfReturn)) {
     transformLocation({ data: location })
       .then((data) =>
         loadWeatherData({
           lat: data.lat,
           lng: data.lng,
-          date: date,
+          date: dateOfDeparture,
         })
       )
       .then(() => loadImage(location))
-      .then(() => updateView(date));
+      .then(() => updateView(dateOfDeparture, dateOfReturn));
   } else {
     alert("Please add valid input data");
   }

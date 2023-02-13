@@ -1,9 +1,13 @@
-const checkInput = (location, date) => {
-  if (!location || !date) {
+const checkInput = (location, dateOfDeparture, dateOfReturn) => {
+  if (!location || !dateOfDeparture || !dateOfReturn) {
     return false;
   }
-  const selectedDate = Date.parse(date);
-  return selectedDate > Date.now();
+  const selectedDateOfDeparture = Date.parse(dateOfDeparture);
+  const selectedDateOfReturn = Date.parse(dateOfReturn);
+  return (
+    selectedDateOfDeparture > Date.now() &&
+    selectedDateOfDeparture < selectedDateOfReturn
+  );
 };
 
 module.exports = checkInput;
