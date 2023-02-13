@@ -25,3 +25,16 @@ input[type="submit"] {
   background-color: white;
   padding: 8px 12px;
 }
+
+.submit-button {
+  &:hover {
+    cursor: pointer;
+    background-color: #ffe9ec;
+  }
+}
+
+.form-input {
+  &:hover {
+    cursor: pointer;
+  }
+}
