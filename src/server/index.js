@@ -46,6 +46,7 @@ viewModel = {
   imageUrl: "",
 };
 
+// get location data from geonames API
 app.post("/transformLocation", async function (req, res) {
   const encodedPlacename = encodeURIComponent(req.body.data);
   const serverRes = await fetch(
@@ -70,6 +71,7 @@ app.post("/transformLocation", async function (req, res) {
   }
 });
 
+// get weather data from weatherbit API
 app.get("/currentWeather/:lat;:lng", async function (req, res) {
   const lat = req.params.lat;
   const lon = req.params.lng;
@@ -126,6 +128,7 @@ app.get("/weatherForecast/:lat;:lng", async function (req, res) {
   }
 });
 
+// get image from pixabay API
 app.get("/loadImage/:location", async function (req, res) {
   const location = encodeURIComponent(req.params.location);
   const serverRes = await fetch(

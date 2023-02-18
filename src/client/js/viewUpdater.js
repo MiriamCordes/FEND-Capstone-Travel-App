@@ -1,3 +1,4 @@
+// update view with loaded data
 async function updateView(dateOfDeparture, dateOfReturn) {
   const request = await fetch("http://localhost:8080/travelResult");
   try {

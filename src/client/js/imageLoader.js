@@ -1,3 +1,4 @@
+// get image for entered location
 async function loadImage(location) {
   const response = await fetch("http://localhost:8080/loadImage/" + location);
   try {
